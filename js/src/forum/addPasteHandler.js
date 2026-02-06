@@ -35,15 +35,19 @@ export default function addPasteHandler() {
       const formData = new FormData();
       formData.append('paste-image', file);
 
-      app
-        .request({
+      fetch(app.forum.attribute('apiUrl') + '/paste-image/upload', {
           method: 'POST',
-          url: app.forum.attribute('apiUrl') + '/paste-image/upload',
-          serialize: (raw) => raw,
+          headers: {
+            'X-CSRF-Token': app.session.csrfToken,
+          },
           body: formData,
         })
-        .then((response) => {
-          const markdown = '![](' + response.url + ')';
+        .then((res) => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.json();
+        })
+        .then((data) => {
+          const markdown = '![](' + data.url + ')';
           const content = editor.getContents();
           editor.setContents(content.replace(placeholder, markdown));
           textarea.classList.remove('paste-image-uploading');
