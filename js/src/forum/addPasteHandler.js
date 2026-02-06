@@ -26,8 +26,9 @@ export default function addPasteHandler() {
       const file = imageItem.getAsFile();
       if (!file) return;
 
-      const placeholder = '![Uploading...]()';
-      this.attrs.composer.editor.insertAtCursor(placeholder);
+      const editor = this.attrs.composer.editor;
+      const placeholder = '![uploading-' + Date.now() + ']()';
+      editor.insertAtCursor(placeholder);
 
       textarea.classList.add('paste-image-uploading');
 
@@ -42,14 +43,14 @@ export default function addPasteHandler() {
           body: formData,
         })
         .then((response) => {
-          const markdown = '![image](' + response.url + ')';
-          const content = this.attrs.composer.editor.getContents();
-          this.attrs.composer.editor.setContents(content.replace(placeholder, markdown));
+          const markdown = '![](' + response.url + ')';
+          const content = editor.getContents();
+          editor.setContents(content.replace(placeholder, markdown));
           textarea.classList.remove('paste-image-uploading');
         })
-        .catch((error) => {
-          const content = this.attrs.composer.editor.getContents();
-          this.attrs.composer.editor.setContents(content.replace(placeholder, ''));
+        .catch(() => {
+          const content = editor.getContents();
+          editor.setContents(content.replace(placeholder, ''));
           textarea.classList.remove('paste-image-uploading');
           app.alerts.show(
             { type: 'error' },
