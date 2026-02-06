@@ -2,9 +2,10 @@
 
 namespace JerryMalmstrom\PasteImage\Api\Controller;
 
+use Flarum\Foundation\Paths;
 use Flarum\Http\RequestUtil;
+use Flarum\Http\UrlGenerator;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 use Illuminate\Support\Str;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -14,12 +15,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 class UploadImageController implements RequestHandlerInterface
 {
     protected SettingsRepositoryInterface $settings;
-    protected FilesystemFactory $filesystem;
+    protected Paths $paths;
+    protected UrlGenerator $url;
 
-    public function __construct(SettingsRepositoryInterface $settings, FilesystemFactory $filesystem)
+    public function __construct(SettingsRepositoryInterface $settings, Paths $paths, UrlGenerator $url)
     {
         $this->settings = $settings;
-        $this->filesystem = $filesystem;
+        $this->paths = $paths;
+        $this->url = $url;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -74,12 +77,17 @@ class UploadImageController implements RequestHandlerInterface
         // Generate unique filename
         $filename = $actor->id . '-' . time() . '-' . Str::random(8) . '.' . $ext;
 
+        // Ensure upload directory exists
+        $uploadDir = $this->paths->public . '/assets/paste-images';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
         // Store the file
-        $disk = $this->filesystem->disk('paste-images');
-        $disk->put($filename, $file->getStream()->getContents());
+        $file->moveTo($uploadDir . '/' . $filename);
 
         // Build the public URL
-        $url = $disk->url($filename);
+        $url = $this->url->to('forum')->path('assets/paste-images/' . $filename);
 
         return new JsonResponse([
             'url' => $url,

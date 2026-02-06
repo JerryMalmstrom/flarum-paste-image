@@ -19,12 +19,4 @@ return [
     (new Extend\Settings())
         ->default('jerrymalmstrom-paste-image.max_file_size', 2048)
         ->default('jerrymalmstrom-paste-image.allowed_types', 'image/png,image/jpeg,image/gif,image/webp'),
-
-    (new Extend\Filesystem())
-        ->disk('paste-images', function () {
-            return [
-                'root' => storage_path('paste-images'),
-                'url' => resolve('Flarum\Http\UrlGenerator')->to('forum')->path('assets/paste-images'),
-            ];
-        }),
 ];
