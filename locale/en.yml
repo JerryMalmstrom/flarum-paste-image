@@ -1,0 +1,8 @@
+jerrymalmstrom-paste-image:
+  admin:
+    max_file_size_label: Maximum File Size (KB)
+    max_file_size_help: Maximum allowed file size for pasted images, in kilobytes.
+    allowed_types_label: Allowed MIME Types
+    allowed_types_help: Comma-separated list of allowed image MIME types (e.g. image/png,image/jpeg).
+  forum:
+    upload_error: Could not upload the pasted image. Please try again.

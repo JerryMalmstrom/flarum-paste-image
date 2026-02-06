@@ -1,0 +1,24 @@
+{
+    "name": "jerrymalmstrom/flarum-paste-image",
+    "description": "Paste images from clipboard directly into Flarum post composer",
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "JerryMalmstrom\\PasteImage\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Paste Image",
+            "icon": {
+                "name": "fas fa-image",
+                "backgroundColor": "#4A90D9",
+                "color": "#fff"
+            }
+        }
+    }
+}
