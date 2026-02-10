@@ -23,6 +23,11 @@ export default function addPasteHandler() {
 
       e.preventDefault();
 
+      const hasFofUpload = 'fof/upload' in flarum.extensions;
+      if (hasFofUpload) {
+        e.stopImmediatePropagation();
+      }
+
       const file = imageItem.getAsFile();
       if (!file) return;
 
@@ -45,8 +50,14 @@ export default function addPasteHandler() {
           return res.json();
         })
         .then((data) => {
-          const markdown = '![](' + data.url + ')';
-          editor.insertAtCursor(markdown);
+          let output;
+          if (hasFofUpload) {
+            const uuid = crypto.randomUUID();
+            output = '[upl-image-preview uuid=' + uuid + ' url=' + data.url + ']';
+          } else {
+            output = '![](' + data.url + ')';
+          }
+          editor.insertAtCursor(output);
           textarea.classList.remove('paste-image-uploading');
         })
         .catch(() => {
